@@ -1,32 +1,28 @@
-import os
-
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+# from flask_migrate import Migrate
 
 
-def create_app(test_config=None):
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'src.sqlite'),
-    )
+app = Flask(__name__, instance_relative_config=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://flask:1111@localhost/flask_app'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True)
+    age = db.Column(db.Integer)
 
-    # a simple page that says hello
-    @app.route('/')
-    def hello():
-        return 'Hello, World!'
+    def __repr__(self) -> str:
+        return '<User %r>' % self.name
 
-    return app
+
+# a simple page that says hello
+@app.route('/')
+def hello():
+    return 'Hello, World!'
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
