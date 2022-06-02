@@ -1,15 +1,32 @@
 from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
+from flask_migrate import Migrate
+from flask_login import LoginManager
 
 
 db = SQLAlchemy()
-app = Flask(__name__, instance_relative_config=True)
+migrate = Migrate()
+login_manager = LoginManager()
 
+app = Flask(__name__, instance_relative_config=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://flask:1111@localhost/flask_app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'palyanyza'
 
 db.init_app(app)
+migrate.init_app(app, db)
+
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+
+from .models import User
+
+
+# get user by primary-key
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 # auth blueprint
