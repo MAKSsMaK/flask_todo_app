@@ -49,7 +49,7 @@ class ShowRegistration(MethodView):
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('auth_login'))
+        return redirect(url_for('auth.show_login'))
 
 
 class Logout(MethodView):
