@@ -4,4 +4,27 @@
 <h1 class="title">
   Welcome, {{ name }}!
 </h1>
+
+<form method="POST" action="/profile">
+  <div>
+    <label for="content">Todo Task</label>
+    <br>
+    <input type="text" name="content" placeholder="Enter Todo...">
+    <br>
+    <button type="submit">Add</button>
+  </div>
+  <br>
+</form>
+  <!-- here is your tasks: -->
+  {% for todo in todos %}
+    <p> {{ todo.id }}) {{ todo.content }} </p>
+    
+    {% if todo.is_done == False %}
+      <span>Not Completed</span>
+    {% else %}
+      <span>Completed</span>
+    {% endif %}
+    <a href="">Update</a>
+    <a href="">Delete</a>
+  {% endfor %}
 {% endblock %}
