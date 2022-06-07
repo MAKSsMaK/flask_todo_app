@@ -1,5 +1,4 @@
 import typing as t
-from crypt import methods
 
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask.views import MethodView
@@ -22,9 +21,6 @@ class ShowProfile(MethodView):
 
     def get(self):
         user_todos = current_user.todos
-        print(user_todos)
-        for todo in user_todos:
-            print(todo.content)
         return render_template('profile.html', name=current_user.name, todos=user_todos)
 
     def post(self):
@@ -40,10 +36,15 @@ class ShowProfile(MethodView):
         pass
 
     def put(self):
-        pass
+        # user_id = Todo.query.filter
+        todo = Todo.query.filter_by(user_id=current_user.id).first()
+        todo.is_done = not todo.is_done
+        db.session.commit()
+        return redirect(url_for('main.show_profile'))
 
 
 profile_view = ShowProfile.as_view('show_profile')
 main.add_url_rule('/', view_func=ShowIndex.as_view('show_index'))
 main.add_url_rule('/profile', view_func=profile_view)
 main.add_url_rule('/profile', view_func=profile_view, methods=['POST',])
+main.add_url_rule('/profile/<int:todo_id>', view_func=profile_view, methods=['PUT',])

@@ -7,7 +7,7 @@
 
 <form method="POST" action="/profile">
   <div>
-    <label for="content">Todo Task</label>
+    <label for="content">Make a Task!</label>
     <br>
     <input type="text" name="content" placeholder="Enter Todo...">
     <br>
@@ -17,14 +17,14 @@
 </form>
   <!-- here is your tasks: -->
   {% for todo in todos %}
-    <p> {{ todo.id }}) {{ todo.content }} </p>
+    <p> {{ todo.id }} | {{ todo.content }} </p>
     
     {% if todo.is_done == False %}
       <span>Not Completed</span>
     {% else %}
       <span>Completed</span>
     {% endif %}
-    <a href="">Update</a>
-    <a href="">Delete</a>
+    <a href="/profile/{{ todo.id }}"><button>Update</button></a>
+    <a href="/profile"><button>Delete</button></a>
   {% endfor %}
 {% endblock %}
