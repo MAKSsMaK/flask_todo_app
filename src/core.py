@@ -18,8 +18,9 @@ class ShowIndex(MethodView):
 
 class ShowProfile(MethodView):
     decorators: t.List[t.Callable] = [login_required]
+    methods: t.Optional[t.List[str]] = ['GET', 'POST']
 
-    def get(self):
+    def get(self, **kwargs):
         user_todos = current_user.todos
         return render_template('profile.html', name=current_user.name, todos=user_todos)
 
@@ -32,19 +33,26 @@ class ShowProfile(MethodView):
 
         return redirect(url_for('main.show_profile'))
 
-    def delete(self):
-        pass
 
-    def put(self):
+class UpdateProfileTodo(MethodView):
+    decorators: t.List[t.Callable] = [login_required]
+    methods: t.Optional[t.List[str]] = ['POST']
+
+    def post(self, todo_id):
         # user_id = Todo.query.filter
-        todo = Todo.query.filter_by(user_id=current_user.id).first()
+        todo = Todo.query.filter_by(id=todo_id).first()
         todo.is_done = not todo.is_done
         db.session.commit()
         return redirect(url_for('main.show_profile'))
 
+    def delete(self):
+        pass
+
 
 profile_view = ShowProfile.as_view('show_profile')
+profile_update = UpdateProfileTodo.as_view('update_profile')
+
 main.add_url_rule('/', view_func=ShowIndex.as_view('show_index'))
 main.add_url_rule('/profile', view_func=profile_view)
-main.add_url_rule('/profile', view_func=profile_view, methods=['POST',])
-main.add_url_rule('/profile/<int:todo_id>', view_func=profile_view, methods=['PUT',])
+main.add_url_rule('/profile', view_func=profile_view)
+main.add_url_rule('/profile/<int:todo_id>', view_func=profile_update)
