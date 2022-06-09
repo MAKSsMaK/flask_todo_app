@@ -2,10 +2,18 @@
 
 {% block content %}
 
+<p class="title is-3">Welcome, {{ name }}!</p>
+<p class="subtitle is-4" for="content">Make a Todo!</p>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <div class="notification is-danger">
+    {{ messages[0] }}
+  </div>
+{% endif %}
+{% endwith %}
 <form method="POST" action="/profile">
   <div>
-    <p class="title is-3">Welcome, {{ name }}!</p>
-    <p class="subtitle is-4" for="content">Make a Todo!</p>
     <div class="container">
       <div class="columns">
         <div class="column is-3"></div>
