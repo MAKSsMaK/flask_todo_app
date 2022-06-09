@@ -1,72 +1,57 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Welcome, {{ name }}!
-</h1>
 
 <form method="POST" action="/profile">
   <div>
-    <label for="content">Make a Task!</label>
-    <br>
-    <input type="text" name="content" placeholder="Enter Todo...">
-    <br>
-    <button class="add" type="submit"><a>Add</a></button>
+    <p class="title is-3">Welcome, {{ name }}!</p>
+    <p class="subtitle is-4" for="content">Make a Todo!</p>
+    <div class="container">
+      <div class="columns">
+        <div class="column is-3"></div>
+        <div class="column is-6">
+          <input class="input is-rounded" type="text" name="content" placeholder="Enter Task...">
+        </div>
+        <div class="column is-3"></div>
+      </div>
+    </div>
+    <button class="add button is-primary is-warning " type="submit"><a>Create</a></button>
   </div>
   <br>
 </form>
 
-  <!-- here is your tasks: -->
-  {% for todo in todos %}
-  <form method="POST" action="/profile/{{ todo.id }}">
-    <button type="submit"><a class="content">{{ todo.content }} - </a></button>
-    {% if todo.is_done == False %}
-      <span class="no">To do!&#10060</span>
-    {% else %}
-      <span class="yes">Done!&#9989</span>
-    {% endif %}
-  </form>
+  <!-- display of tasks: -->
+{% for todo in todos %}
+<form method="POST" action="/profile/update/{{ todo.id }}">
 
-  <style>
-    button {
-      border: none;
-      color:white;
-      background-color: #00d1b2;
-    }
+  {% if todo.is_done == False %}
+  <button class="button is-primary is" type="submit"><a class="content">{{ todo.content }}; (Done)</a></button>
+    <span class="no"><a class="delete is-medium" href="/profile/delete/{{ todo.id }}"></a></span>
 
-    button:hover {
-      color:white;
-    }
+  {% else %}
+  <button class="button is-primary is-inverted" type="submit"><a class="content">{{ todo.content }};</a></button>
+    
+  {% endif %}
+</form>
 
-    label {
-      font-size: 18px; 
-    }
+<style>
+  button {
+    margin-top: 2px;
+  }
 
-    button.add {
-      font-size: 16px;
-    }
-    span.no {
-      border-radius: 90%;
-      border: none;
-      color:white;
-      /* background-color: red; */
+  button.add {
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  
+  a.content {
+    font-size: 17px;
+  }
 
-    }
-    span.yes {
-      border-radius: 90%;
-      border: none;
-      color: white;
-      /* background-color: gold; */
-      
-    }
-    a.content {
-      font-size: 16px;
-    }
+  a.delete {
+    margin-top: 9px;
+  }
   </style>
-  <!-- <a href="/profile/{{ todo.id }}"><p> {{ todo.content }} </p></a> -->
-    <!-- <a href="/profile/{{ todo.id }}"><button>Update</button></a> -->
-    <!-- <a href="/profile"><button>Delete</button></a> -->
-    <!-- <p> {{ todo.id }} | {{ todo.content }} </p> -->
 
-  {% endfor %}
+{% endfor %}
 {% endblock %}
