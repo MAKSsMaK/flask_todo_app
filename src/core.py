@@ -1,6 +1,6 @@
 import typing as t
 
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask.views import MethodView
 from flask_login import current_user, login_required
 
@@ -27,6 +27,9 @@ class ShowProfile(MethodView):
     def post(self):
         user_todo = current_user.id
         content = request.form.get('content')
+        if not content:
+            flash('You can not create empty task!')
+            return redirect(url_for('main.show_profile'))
         new_todo = Todo(content=content, is_done=False, user_id=user_todo)
         db.session.add(new_todo)
         db.session.commit()
