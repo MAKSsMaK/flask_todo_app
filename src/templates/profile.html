@@ -25,11 +25,11 @@
 <form method="POST" action="/profile/update/{{ todo.id }}">
 
   {% if todo.is_done == False %}
-  <button class="button is-primary is" type="submit"><a class="content">{{ todo.content }}; (Done)</a></button>
-    <span class="no"><a class="delete is-medium" href="/profile/delete/{{ todo.id }}"></a></span>
+  <button class="button is-primary is-inverted" type="submit"><a class="content">{{ todo.content }};</a></button>
 
   {% else %}
-  <button class="button is-primary is-inverted" type="submit"><a class="content">{{ todo.content }};</a></button>
+  <button class="button is-primary " type="submit"><a class="content">{{ todo.content }}; (Done)</a></button>
+  <span class="no"><a class="delete is-medium" href="/profile/delete/{{ todo.id }}"></a></span>
     
   {% endif %}
 </form>
