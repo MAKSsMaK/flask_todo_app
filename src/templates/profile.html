@@ -20,10 +20,10 @@
         <div class="column is-6">
           <input class="input is-rounded" type="text" name="content" placeholder="Enter Task...">
         </div>
-        <div class="column is-3"></div>
       </div>
     </div>
-    <button class="add button is-primary is-warning " type="submit"><a>Create</a></button>
+    <br>
+    <button class="add button is-primary is-warning" type="submit"><a>Create</a></button>
   </div>
   <br>
 </form>
@@ -33,31 +33,27 @@
 <form method="POST" action="/profile/update/{{ todo.id }}">
 
   {% if todo.is_done == False %}
-  <button class="button is-primary is-inverted" type="submit"><a class="content">{{ todo.content }};</a></button>
+  <button class="todo button is-primary is-inverted" type="submit"><a class="content">{{ todo.content }};</a></button>
 
   {% else %}
-  <button class="button is-primary " type="submit"><a class="content">{{ todo.content }}; (Done)</a></button>
+  <button class="todo button is-primary " type="submit"><a class="content">{{ todo.content }} (Done);</a></button>
   <span class="no"><a class="delete is-medium" href="/profile/delete/{{ todo.id }}"></a></span>
     
   {% endif %}
 </form>
 
 <style>
-  button {
-    margin-top: 2px;
-  }
-
   button.add {
     font-size: 16px;
-    margin-top: 5px;
   }
-  
+  button.todo {
+    margin-top: 3px;
+  }  
   a.content {
     font-size: 17px;
   }
-
   a.delete {
-    margin-top: 9px;
+    margin-top: 10px;
   }
   </style>
 
