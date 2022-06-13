@@ -43,14 +43,14 @@ class ShowRegistration(MethodView):
         age = request.form.get('age')
         email = request.form.get('email')
         password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
 
         if not name or not age or not email or not password:
-            flash('Check the forms and try again')
+            flash('Check the forms and try again.')
             return redirect(url_for('auth.show_register'))
 
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Check your forms and try again')
+        elif user:
+            flash('Such user is already registered. Try to Login.')
             return redirect(url_for('auth.show_register'))
 
         new_user = User(name=name, age=age, email=email, password=generate_password_hash(password, method='sha256'))
