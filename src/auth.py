@@ -12,6 +12,8 @@ auth = Blueprint('auth', __name__)
 
 
 class ShowLogin(MethodView):
+    methods: t.Optional[t.List[str]] = ['GET', 'POST']
+
     def get(self):
         return render_template('login.html')
 
@@ -31,6 +33,8 @@ class ShowLogin(MethodView):
 
 
 class ShowRegistration(MethodView):
+    methods: t.Optional[t.List[str]] = ['GET', 'POST']
+
     def get(self):
         return render_template('register.html')
 
@@ -40,9 +44,13 @@ class ShowRegistration(MethodView):
         email = request.form.get('email')
         password = request.form.get('password')
 
+        if not name or not age or not email or not password:
+            flash('Check the forms and try again')
+            return redirect(url_for('auth.show_register'))
+
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Email address already exists')
+            flash('Check your forms and try again')
             return redirect(url_for('auth.show_register'))
 
         new_user = User(name=name, age=age, email=email, password=generate_password_hash(password, method='sha256'))
@@ -64,9 +72,9 @@ register_view = ShowRegistration.as_view('show_register')
 logout_view = Logout.as_view('logout')
 
 auth.add_url_rule('/login', view_func=login_view)
-auth.add_url_rule('/login', view_func=login_view, methods=['POST',])
+auth.add_url_rule('/login', view_func=login_view)
 
 auth.add_url_rule('/register', view_func=register_view)
-auth.add_url_rule('/register', view_func=register_view, methods=['POST',])
+auth.add_url_rule('/register', view_func=register_view)
 
 auth.add_url_rule('/logout', view_func=logout_view)
