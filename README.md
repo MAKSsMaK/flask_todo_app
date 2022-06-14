@@ -16,7 +16,7 @@ pip install -r requirements.txt
 
 Simple_Auth_Todo_App requires [postgres](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) to be installed and configured.
 
-So we need to do some things before runтing the app.
+So we need to do some things before running the app.
 
 ```bash
 sudo -u postgres psql
