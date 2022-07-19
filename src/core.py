@@ -1,11 +1,13 @@
 import typing as t
 
-from flask import Blueprint, redirect, render_template, request, url_for, flash
+from flask import (Blueprint, flash, jsonify, redirect, render_template,
+                   request, url_for)
 from flask.views import MethodView
 from flask_login import current_user, login_required
 
 from . import db
 from .models import Todo, User
+from .schema import TodoSchema, UserSchema
 
 main = Blueprint('main', __name__)
 
@@ -58,12 +60,25 @@ class DeleteProfileTodo(MethodView):
         return redirect(url_for('main.show_profile'))
 
 
+class ExportProfileTodo(MethodView):
+    decorators: t.List[t.Callable] = [login_required]
+    methods: t.Optional[t.List[str]] = ['GET']
+
+    def get(self):
+        current_todo = User.query.filter_by(id=current_user.id).first()
+        schema_todo = UserSchema(many=False)
+        output = schema_todo.dump(current_todo)
+        return jsonify({'user_todos': output})
+
+
 profile_view = ShowProfile.as_view('show_profile')
 profile_update = UpdateProfileTodo.as_view('update_profile')
 profile_delete = DeleteProfileTodo.as_view('delete_profile')
+profile_download = ExportProfileTodo.as_view('export_profile')
 
 main.add_url_rule('/', view_func=ShowIndex.as_view('show_index'))
 main.add_url_rule('/profile', view_func=profile_view)
 main.add_url_rule('/profile', view_func=profile_view)
 main.add_url_rule('/profile/update/<int:todo_id>', view_func=profile_update)
 main.add_url_rule('/profile/delete/<int:todo_id>', view_func=profile_delete)
+main.add_url_rule('/profile/export', view_func=profile_download)
