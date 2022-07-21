@@ -1,9 +1,13 @@
+import csv
+import io
+import json
 import typing as t
 
-from flask import (Blueprint, flash, jsonify, redirect, render_template,
-                   request, url_for)
+from flask import (Blueprint, Response, flash, jsonify, redirect,
+                   render_template, request, url_for)
 from flask.views import MethodView
 from flask_login import current_user, login_required
+from numpy import byte
 
 from . import db
 from .models import Todo, User
@@ -12,7 +16,6 @@ from .schema import TodoSchema, UserSchema
 main = Blueprint('main', __name__)
 
 
-# a simple page that says hello
 class ShowIndex(MethodView):
     def get(self):
         return render_template('index.html')
@@ -67,8 +70,24 @@ class ExportProfileTodo(MethodView):
     def get(self):
         current_todo = User.query.filter_by(id=current_user.id).first()
         schema_todo = UserSchema(many=False)
-        output = schema_todo.dump(current_todo)
-        return jsonify({'user_todos': output})
+        output: dict = schema_todo.dump(current_todo)
+        user_info = output['name']
+        todo_info = [user_info, 'content', 'user_id', 'is_done']
+
+        # csv module can write data in io.StringIO buffer only
+        with io.StringIO() as buffer:
+            writer = csv.DictWriter(buffer, fieldnames=todo_info)
+            writer.writeheader()
+            writer.writerows(output['todos'])
+            buffer.seek(0)
+            result = buffer.getvalue()
+
+        return Response(
+            result,
+            mimetype="text/csv",
+            headers={"Content-disposition":
+                     "attachment; filename=user_todo.csv"}
+        )
 
 
 profile_view = ShowProfile.as_view('show_profile')
