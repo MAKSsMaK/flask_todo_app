@@ -1,17 +1,15 @@
 import csv
 import io
-import json
 import typing as t
 
-from flask import (Blueprint, Response, flash, jsonify, redirect,
-                   render_template, request, url_for)
+from flask import (Blueprint, Response, flash, redirect, render_template,
+                   request, url_for)
 from flask.views import MethodView
 from flask_login import current_user, login_required
-from numpy import byte
 
 from . import db
 from .models import Todo, User
-from .schema import TodoSchema, UserSchema
+from .schema import UserSchema
 
 main = Blueprint('main', __name__)
 
@@ -86,7 +84,7 @@ class ExportProfileTodo(MethodView):
             result,
             mimetype="text/csv",
             headers={"Content-disposition":
-                     "attachment; filename=user_todo.csv"}
+                     f"attachment; filename={user_info}_todos.csv"}
         )
 
 
