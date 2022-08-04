@@ -2,11 +2,13 @@ from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_marshmallow import Marshmallow
 
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+marsh = Marshmallow()
 
 app = Flask(__name__, instance_relative_config=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://flask:1111@localhost/flask_app'
@@ -15,6 +17,8 @@ app.config['SECRET_KEY'] = 'palyanyza'
 
 db.init_app(app)
 migrate.init_app(app, db)
+
+marsh.init_app(app)
 
 login_manager.login_view = 'auth.login'
 login_manager.init_app(app)

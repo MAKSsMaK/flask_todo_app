@@ -1,16 +1,19 @@
+import csv
+import io
 import typing as t
 
-from flask import Blueprint, redirect, render_template, request, url_for, flash
+from flask import (Blueprint, Response, flash, redirect, render_template,
+                   request, url_for)
 from flask.views import MethodView
 from flask_login import current_user, login_required
 
 from . import db
 from .models import Todo, User
+from .schema import UserSchema
 
 main = Blueprint('main', __name__)
 
 
-# a simple page that says hello
 class ShowIndex(MethodView):
     def get(self):
         return render_template('index.html')
@@ -58,12 +61,41 @@ class DeleteProfileTodo(MethodView):
         return redirect(url_for('main.show_profile'))
 
 
+class ExportProfileTodo(MethodView):
+    decorators: t.List[t.Callable] = [login_required]
+    methods: t.Optional[t.List[str]] = ['GET']
+
+    def get(self):
+        current_todo = User.query.filter_by(id=current_user.id).first()
+        schema_todo = UserSchema(many=False)
+        output: dict = schema_todo.dump(current_todo)
+        user_info = output['name']
+        todo_info = [user_info, 'content', 'user_id', 'is_done']
+
+        # csv module can write data in io.StringIO buffer only
+        with io.StringIO() as buffer:
+            writer = csv.DictWriter(buffer, fieldnames=todo_info)
+            writer.writeheader()
+            writer.writerows(output['todos'])
+            buffer.seek(0)
+            result = buffer.getvalue()
+
+        return Response(
+            result,
+            mimetype="text/csv",
+            headers={"Content-disposition":
+                     f"attachment; filename={user_info}_todos.csv"}
+        )
+
+
 profile_view = ShowProfile.as_view('show_profile')
 profile_update = UpdateProfileTodo.as_view('update_profile')
 profile_delete = DeleteProfileTodo.as_view('delete_profile')
+profile_download = ExportProfileTodo.as_view('export_profile')
 
 main.add_url_rule('/', view_func=ShowIndex.as_view('show_index'))
 main.add_url_rule('/profile', view_func=profile_view)
 main.add_url_rule('/profile', view_func=profile_view)
 main.add_url_rule('/profile/update/<int:todo_id>', view_func=profile_update)
 main.add_url_rule('/profile/delete/<int:todo_id>', view_func=profile_delete)
+main.add_url_rule('/profile/export', view_func=profile_download)
