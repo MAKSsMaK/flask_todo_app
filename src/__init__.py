@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -32,6 +33,12 @@ from .models import User
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+@app.template_global()
+def static_include(filename):
+    fullpath = os.path.join(app.static_folder, filename)
+    with open(fullpath, 'r') as f:
+        return f.read()
 
 # auth blueprint
 from .auth import auth as auth_blueprint
