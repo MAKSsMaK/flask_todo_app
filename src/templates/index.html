@@ -7,4 +7,9 @@
 <h2 class="subtitle">
   and TODO App in Flask.
 </h2>
+  {% block javascript %}
+    <script type="text/javascript">
+      {% include "script.js" %}
+    </script>
+  {% endblock %}
 {% endblock %}
